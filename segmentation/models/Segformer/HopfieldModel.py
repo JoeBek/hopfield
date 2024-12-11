@@ -37,17 +37,22 @@ class HopfieldModel():
         self.model.to(device)
 
 
-        for i,image in enumerate(tqdm(dataloader, total=cutoff)):
+        images = []
+        predictions = []
+
+        for i,batch in enumerate(tqdm(dataloader, total=cutoff)):
             if i >= cutoff:
                 break
-            image = image.to(device)
+            image = batch[0].to(device)
             with torch.no_grad():
                 outputs = self.model(image)
             logits = outputs.logits
-            predictions = torch.argmax(logits, dim=1)
-            print(predictions)
+            prediction = torch.argmax(logits, dim=1)
+            images.append(image)
+            predictions.append(prediction)
 
 
+        return images, predictions
 
 
 

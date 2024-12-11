@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import torch
 
-def visualize_prediction(image, prediction):
+def visualize(image, prediction):
     # Convert the image and prediction to numpy arrays
     image = image.squeeze().permute(1, 2, 0).cpu().numpy()
     prediction = prediction.squeeze().cpu().numpy()
@@ -24,4 +25,34 @@ def visualize_prediction(image, prediction):
     ax2.imshow(colored_prediction)
     ax2.set_title('Segmentation Prediction')
     ax2.axis('off')
+    plt.show()
+
+
+def iou(image, prediction):
+    # Convert the image to a binary mask
+    image = torch.sum(image, dim=1) > 0  # Sum across the color channels and threshold
+    image = image.float()  # Convert to float
+
+    # Flatten the image and prediction
+    image = image.view(image.size(0), -1)
+    prediction = prediction.view(prediction.size(0), -1)
+
+    # Calculate the intersection and union
+    intersection = torch.sum(image * prediction, dim=1)
+    union = torch.sum(image + prediction, dim=1) - intersection
+
+    # Calculate the IoU
+    iou = intersection / union
+    return iou
+
+
+
+def graph_iou(images, predictions):
+    ious = []
+    for image, prediction in zip(images, predictions):
+        ious.append(iou(image, prediction))
+    plt.scatter(range(len(ious)),ious)
+    plt.xlabel('Image Index')
+    plt.ylabel('IoU')
+    plt.title('IoU vs. Image Index')
     plt.show()
