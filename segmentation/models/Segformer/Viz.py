@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+import torch.nn.functional as func
 
 def visualize(image, prediction):
     # Convert the image and prediction to numpy arrays
@@ -27,11 +28,13 @@ def visualize(image, prediction):
     ax2.axis('off')
     plt.show()
 
-
 def iou(image, prediction):
     # Convert the image to a binary mask
     image = torch.sum(image, dim=1) > 0  # Sum across the color channels and threshold
     image = image.float()  # Convert to float
+
+    # Interpolate the prediction to match the image size
+    prediction = func.interpolate(prediction.unsqueeze(1).float(), size=image.shape[1:], mode='nearest').squeeze(1)
 
     # Flatten the image and prediction
     image = image.view(image.size(0), -1)
@@ -44,7 +47,6 @@ def iou(image, prediction):
     # Calculate the IoU
     iou = intersection / union
     return iou
-
 
 
 def graph_iou(images, predictions):
