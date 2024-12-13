@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn.functional as func
+import os
 
 def visualize(image, prediction):
     # Convert the image and prediction to numpy arrays
@@ -14,7 +15,7 @@ def visualize(image, prediction):
     image = std * image + mean
     image = np.clip(image, 0, 1)
 
-    # create a color map for the prediction
+    # Create a color map for the prediction
     cmap = plt.get_cmap('viridis')
     colored_prediction = cmap(prediction / prediction.max())
 
@@ -58,3 +59,14 @@ def graph_iou(images, predictions):
     plt.ylabel('IoU')
     plt.title('IoU vs. Image Index')
     plt.show()
+
+def get_path(filename):
+
+    # lib/
+    libdir = os.path.dirname(os.path.abspath(__file__))
+    # ../../data/dev
+    datapath = f'../../data/{filename}'
+
+    path = os.path.join(libdir, datapath)
+
+    return path

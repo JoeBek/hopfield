@@ -1,6 +1,8 @@
 from transformers import SegformerForSemanticSegmentation
 import torch
 from tqdm import tqdm
+import os
+from .Utils import get_path
 
 """        model = SegformerForSemanticSegmentation.from_pretrained(
             "nvidia/mit-b0",
@@ -19,17 +21,34 @@ class HopfieldModel():
 
 
 
-    def inspect_children(self):
+    def inspect_children(self, write=False):
         
+        output = []
         for i, child in enumerate(self.model.children()):
-            print(f"child {i} is: ")
-            print(child)
+            line = f"child {i} is: \n{child}\n"
+            output.append(line)
+            if not write:
+                print(line)
 
-    def inspect_modules(self):
+        if write:
+            path = get_path("dev/children_output.txt")
+            with open(path, 'w') as file:
+                file.writelines(output)
+
+    def inspect_modules(self, write=False):
     
+        output = []
         for i, module in enumerate(self.model.modules()):
-            print(f"module {i} is: ")
-            print(module)
+            line = f"module {i} is: \n{module}\n"
+            output.append(line)
+            if not write:
+                print(line)
+
+        if write:
+            path = get_path("dev/module_output.txt")
+            with open(path, 'w') as file:
+                file.writelines(output)
+
 
     def evaluate(self, dataloader, cutoff=10):
         self.model.eval()
@@ -70,9 +89,5 @@ if __name__ == "__main__":
     hopfield_model.inspect_children()
     hopfield_model.inspect_modules()
 
-
-
-
-        
 
 
