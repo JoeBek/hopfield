@@ -1,5 +1,5 @@
 from torchvision.models.segmentation import fcn_resnet50 
-from lib.HopfieldModel import HopfieldModel
+from lib.HopfieldModel import HopfieldModel, CityscapesDataset
 from lib.SegDataset import SegDataset
 from lib.Utils import get_path, visualize, iou, graph_iou
 import torch
@@ -93,10 +93,10 @@ if __name__ == "__main__":
 
     fcn = FCN()
     
-    data = SegDataset(get_path("birds"))
+    data = SegDataset(get_path(""))
 
 
-    fcn.tune(data.loader, epochs=10, append="mkI")
+    # fcn.tune(data.loader, epochs=10, append="mkI")
 
 
     """
