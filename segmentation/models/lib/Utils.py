@@ -4,7 +4,7 @@ import torch
 import torch.nn.functional as func
 import os
 
-def visualize(image, prediction):
+def visualize(image, prediction, write=False, name="output.png"):
     # Convert the image and prediction to numpy arrays
     image = image.squeeze().permute(1, 2, 0).cpu().numpy()
     prediction = prediction.squeeze().cpu().numpy()
@@ -27,9 +27,15 @@ def visualize(image, prediction):
     ax2.imshow(colored_prediction)
     ax2.set_title('Segmentation Prediction')
     ax2.axis('off')
+    if write:
+        prepath = "../results/segments/" + name
+        path = get_path(prepath)
+        plt.savefig(path)
+        return
     plt.show()
 
 def iou(image, prediction):
+    plt.clf()
     # Convert the image to a binary mask
     image = torch.sum(image, dim=1) > 0  # Sum across the color channels and threshold
     image = image.float()  # Convert to float
@@ -50,7 +56,7 @@ def iou(image, prediction):
     return iou
 
 
-def graph_iou(images, predictions):
+def graph_iou(images, predictions, write=False, name="iou.png" ):
     ious = []
     for image, prediction in zip(images, predictions):
         ious.append(iou(image, prediction))
@@ -58,6 +64,11 @@ def graph_iou(images, predictions):
     plt.xlabel('Image Index')
     plt.ylabel('IoU')
     plt.title('IoU vs. Image Index')
+    if write:
+        prepath = "../results/ious/" + name
+        path = get_path(prepath)
+        plt.savefig(path)
+        return
     plt.show()
 
 def get_path(filename):

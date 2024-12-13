@@ -3,6 +3,7 @@ import torch
 from tqdm import tqdm
 import os
 from .Utils import get_path
+from hflayers import HopfieldLayer
 
 """        model = SegformerForSemanticSegmentation.from_pretrained(
             "nvidia/mit-b0",
@@ -19,9 +20,32 @@ class HopfieldModel():
 
         self.model = model
 
+        # each model can use the same hopfield layer for most of the flags
+        # this layer is set for the FCN model, the sizes can be set in the inherited constructors
+        self.hopfield_layer = HopfieldLayer(
+                    input_size=2048,
+                    hidden_size=512,
+                    output_size=2048,
+                    pattern_size=2048,
+                    num_heads=8,
+                    scaling=0.25,
+                    update_steps_max=3,
+                    update_steps_eps=1e-4,
+                    normalize_stored_pattern=True,
+                    normalize_stored_pattern_affine=True,
+                    normalize_state_pattern=True,
+                    normalize_state_pattern_affine=True,
+                    normalize_pattern_projection=True,
+                    normalize_pattern_projection_affine=True,
+                    normalize_hopfield_space=False,
+                    normalize_hopfield_space_affine=False,
+                    stored_pattern_as_static=False
+                )
 
 
-    def inspect_children(self, write=False):
+
+
+    def inspect_children(self, write=False, prepend=""):
         
         output = []
         for i, child in enumerate(self.model.children()):
@@ -31,11 +55,11 @@ class HopfieldModel():
                 print(line)
 
         if write:
-            path = get_path("dev/children_output.txt")
+            path = get_path(f"dev/{prepend}children_output.txt")
             with open(path, 'w') as file:
                 file.writelines(output)
 
-    def inspect_modules(self, write=False):
+    def inspect_modules(self, write=False, prepend=""):
     
         output = []
         for i, module in enumerate(self.model.modules()):
@@ -45,7 +69,7 @@ class HopfieldModel():
                 print(line)
 
         if write:
-            path = get_path("dev/module_output.txt")
+            path = get_path(f"dev/{prepend}module_output.txt")
             with open(path, 'w') as file:
                 file.writelines(output)
 
